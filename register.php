@@ -3,7 +3,13 @@ require_once __DIR__ . "/session_check.php";
 
 $register_errors = $_SESSION['registration_errors'] ?? [];
 unset($_SESSION['registration_errors']);
+
+$success =$_SESSION['success'] ?? "";
+unset($_SESSION["success"]);
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,6 +48,11 @@ unset($_SESSION['registration_errors']);
                             <li><?= $error ?></li>
                         <?php } ?>
                     </ul>
+                </div>
+            <?php } ?>
+            <?php if ($success) { ?>
+                <div class="alert alert-success">
+                    <?php  echo $success; ?>
                 </div>
             <?php } ?>
 

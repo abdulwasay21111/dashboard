@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/session_check.php";
-// echo "<pre>";
+require_once __DIR__ . "/db_con.php";
 // print_r($_POST);
 // echo "</pre>";
 
@@ -37,5 +37,35 @@ if(!empty($register_errors)){
     header("Location: register.php");
     exit;
 }
+
+$query = mysqli_prepare($connection, "SELECT * from registered_users WHERE Mail = ?") ;
+mysqli_stmt_bind_param($query, 's', $accMail);
+mysqli_stmt_execute($query);
+$query_result = mysqli_stmt_get_result($query);
+
+if(mysqli_num_rows($query_result) > 0){
+        $register_errors[] = "THis Email is already registered";
+        $_SESSION["registration_errors"] = $register_errors;
+       header("Location: register.php");
+       exit;
+}
+
+
+
+$safe_pass = password_hash($accPass, PASSWORD_DEFAULT);
+
+// For insertion of data in database
+
+
+$insertion_query = mysqli_prepare($connection, "INSERT INTO registered_users(Full_Name, Mail, Pass) VALUES (?, ?, ?)");
+mysqli_stmt_bind_param($insertion_query, 'sss', $accName, $accMail, $accPass);
+mysqli_stmt_execute($insertion_query);
+
+
+$_SESSION['success'] = "Email has been registered";
+    header("Location: register.php");
+
+  exit;
+
 }
 ?>
