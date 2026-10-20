@@ -1,4 +1,11 @@
+<?php
+require_once __DIR__ . "/session_check.php";
+require_once __DIR__ . "/db_con.php";
 
+$register_errors = $_SESSION['registration_errors'] ?? [];
+unset($_SESSION['registration_errors']);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,15 +36,24 @@
                 <h4 class="fw-bold mb-1">Welcome Back!</h4>
                 <p class="text-muted small">Sign in to manage your students and classes</p>
             </div>
+            <?php if (!empty($register_errors)) { ?>
+                <div class="alert alert-danger">
+                    <ul>
+                        <?php foreach ($register_errors as $error) { ?>
+                            <li><?= $error ?></li>
+                        <?php } ?>
+                    </ul>
+                </div>
+            <?php } ?>
 
-            <form action="dashboard.html" method="GET">
+            <form action="login_process.php" method="POST">
                 <div class="mb-3">
                     <label for="email" class="form-label small fw-semibold text-secondary">Email Address</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light text-muted border-end-0"><i
                                 class="bi bi-envelope"></i></span>
-                        <input type="email" class="form-control border-start-0 ps-0" id="email"
-                            placeholder="teacher@school.edu" required>
+                        <input type="text" name="Email" class="form-control border-start-0 ps-0" id="email"
+                            placeholder="teacher@school.edu">
                     </div>
                 </div>
 
@@ -49,7 +65,7 @@
                     <div class="input-group">
                         <span class="input-group-text bg-light text-muted border-end-0"><i
                                 class="bi bi-lock"></i></span>
-                        <input type="password" class="form-control border-start-0 ps-0" id="password"
+                        <input type="password" name="password" class="form-control border-start-0 ps-0" id="password"
                             placeholder="••••••••" required>
                     </div>
                 </div>

@@ -8,6 +8,7 @@ $register_errors = [];
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
+
 // Details Variables
 
 $accMail = $_POST["Email"];
@@ -39,8 +40,22 @@ if(mysqli_num_rows($query_result) == 0){
        header("Location: login.php");
        exit;
 }
- $user = mysqli_fetch_assoc($query_result);
+ 
+$user = mysqli_fetch_assoc($query_result);
+// echo  "<pre>";
+// print_r($user);
+// echo "</pre>";
+// exit;
+if(password_verify($accPass, $user["Pass"]) == false){
+    $register_errors[] = "Wrong Crediantals";
+    $_SESSION["registration_errors"] = $register_errors;
+     header("Location: login.php");
+     exit;
 
+}
 
+$_SERVER["id"] = $user["id"];
+header("Location: dashboard.html");
+exit;
  
 }
