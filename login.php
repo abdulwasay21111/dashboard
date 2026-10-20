@@ -63,7 +63,7 @@
             </form>
 
             <div class="mt-4 text-center">
-                <p class="small text-muted mb-0">Don't have an account? <a href="register.html"
+                <p class="small text-muted mb-0">Don't have an account? <a href="register.php"
                         class="fw-semibold text-primary text-decoration-none">Sign Up</a></p>
             </div>
         </div>
