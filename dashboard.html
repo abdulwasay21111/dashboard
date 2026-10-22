@@ -44,7 +44,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="student-create.html" class="nav-link">
+                    <a href="student-create.php" class="nav-link">
                         <i class="bi bi-person-plus-fill"></i>
                         <span>Add Student</span>
                     </a>
