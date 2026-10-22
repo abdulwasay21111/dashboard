@@ -1,6 +1,16 @@
+<?php
+require_once __DIR__ . "/session_check.php";
+require_once __DIR__ . "/db_con.php";
+
+$register_errors = $_SESSION['registration_errors'] ?? [];
+unset($_SESSION['registration_errors']);
+$success = $_SESSION['success'] ?? "";
+unset($_SESSION["success"]);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +26,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body>
 
     <div class="app-container">
@@ -46,7 +57,7 @@
                         <span>Add Student</span>
                     </a>
                 </li>
-                
+
                 <li class="nav-label mt-3">Administration</li>
                 <li>
                     <a href="#" class="nav-link">
@@ -114,8 +125,22 @@
                                 <p class="text-muted small mb-0">Fill in the fields below to enroll a new student in your class</p>
                             </div>
                         </div>
+                        <?php if (!empty($register_errors)) { ?>
+                            <div class="alert alert-danger">
+                                <ul>
+                                    <?php foreach ($register_errors as $error) { ?>
+                                        <li><?= $error ?></li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                        <?php } ?>
+                        <?php if ($success) { ?>
+                            <div class="alert alert-success">
+                                <?php echo $success; ?>
+                            </div>
+                        <?php } ?>
 
-                        <form action="students.html" method="GET">
+                        <form action="creation_handle.php" method="POST">
                             <!-- Basic Information Card -->
                             <div class="card-custom mb-4">
                                 <div class="card-header">
@@ -125,19 +150,19 @@
                                     <div class="row g-3">
                                         <div class="col-12 col-md-6">
                                             <label for="firstName" class="form-label small fw-semibold text-secondary">First Name</label>
-                                            <input type="text" class="form-control" id="firstName" placeholder="e.g. Liam" required>
+                                            <input type="text" name="first_name" class="form-control" id="firstName" placeholder="e.g. Liam">
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="lastName" class="form-label small fw-semibold text-secondary">Last Name</label>
-                                            <input type="text" class="form-control" id="lastName" placeholder="e.g. Vance" required>
+                                            <input type="text" name="last_name" class="form-control" id="lastName" placeholder="e.g. Vance">
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="studentEmail" class="form-label small fw-semibold text-secondary">Email Address</label>
-                                            <input type="email" class="form-control" id="studentEmail" placeholder="e.g. liam.v@school.edu" required>
+                                            <input type="text" class="form-control" name="student_email" id="studentEmail" placeholder="e.g. liam.v@school.edu">
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="phone" class="form-label small fw-semibold text-secondary">Phone Number</label>
-                                            <input type="tel" class="form-control" id="phone" placeholder="+1 (555) 000-0000">
+                                            <input type="tel" class="form-control" name="student_phone" id="phone" placeholder="+1 (555) 000-0000">
                                         </div>
                                     </div>
                                 </div>
@@ -152,11 +177,11 @@
                                     <div class="row g-3">
                                         <div class="col-12 col-md-4">
                                             <label for="rollNumber" class="form-label small fw-semibold text-secondary">Roll Number</label>
-                                            <input type="text" class="form-control" id="rollNumber" placeholder="e.g. 1028" required>
+                                            <input type="text" name="student_rn" class="form-control" id="rollNumber" placeholder="e.g. 1028">
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label for="studentClass" class="form-label small fw-semibold text-secondary">Class / Grade</label>
-                                            <select class="form-select" id="studentClass" required>
+                                            <select class="form-select" name="student_grade" id="studentClass">
                                                 <option value="" selected disabled>Select Class</option>
                                                 <option value="10-A">Grade 10-A</option>
                                                 <option value="10-B">Grade 10-B</option>
@@ -166,7 +191,7 @@
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label for="gender" class="form-label small fw-semibold text-secondary">Gender</label>
-                                            <select class="form-select" id="gender">
+                                            <select class="form-select" name="student_gender" id="gender">
                                                 <option value="" selected disabled>Select Gender</option>
                                                 <option value="male">Male</option>
                                                 <option value="female">Female</option>
@@ -175,11 +200,11 @@
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="dob" class="form-label small fw-semibold text-secondary">Date of Birth</label>
-                                            <input type="date" class="form-control" id="dob">
+                                            <input type="date" name="student_dob" class="form-control" id="dob">
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="status" class="form-label small fw-semibold text-secondary">Enrollment Status</label>
-                                            <select class="form-select" id="status">
+                                            <select class="form-select" name="student_status" id="status">
                                                 <option value="active" selected>Active</option>
                                                 <option value="pending">Pending</option>
                                                 <option value="inactive">Inactive</option>
@@ -209,4 +234,5 @@
     <!-- Custom JS -->
     <script src="assets/js/main.js"></script>
 </body>
+
 </html>
