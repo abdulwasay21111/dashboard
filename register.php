@@ -2,6 +2,7 @@
 require_once __DIR__ . "/session_check.php";
 require_once __DIR__ . "/db_con.php";
 
+
 $register_errors = $_SESSION['registration_errors'] ?? [];
 unset($_SESSION['registration_errors']);
 

@@ -55,7 +55,7 @@ if(password_verify($accPass, $user["Pass"]) == false){
 }
 
 $_SERVER["id"] = $user["id"];
-header("Location: dashboard.html");
+header("Location: dashboard.php");
 exit;
  
 }
