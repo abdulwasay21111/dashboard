@@ -1,16 +1,31 @@
 <?php
 require_once __DIR__ . "/session_check.php";
 require_once __DIR__ . "/db_con.php";
+$search = isset($_GET["search"]) ? $_GET["search"] : "";
+$class = isset($_GET['class']) ? $_GET["class"] : "";
 
 
-$query_insert_student  = "SELECT * from students_info LEFT JOIN students_academics ON students_info.student_id = students_academics.student_id";
+
+
+$query_insert_student  = "SELECT * from students_info INNER JOIN students_academics ON students_info.student_id = students_academics.student_id";
+if($search != ""){
+    $query_insert_student .= " WHERE (students_info.first_name ='$search' OR students_info.last_name = '$search' OR students_info.email='$search' OR students_academics.roll_number='$search' OR students_info.email='$search')";
+}
+if($class != ""){
+
+$query_insert_student .=  " AND class='$class'";
+}
 
 $insert_result = mysqli_query($connection, $query_insert_student);
 
 $student_data = mysqli_fetch_all($insert_result, MYSQLI_ASSOC);
 
+
+// echo $query_insert_student;
+// exit;
+
 // echo "<pre>";
-// print_r($student_data);
+// print_r($query_insert_student);
 // echo "</pre>";
 // exit;
 ?>
@@ -94,15 +109,16 @@ $student_data = mysqli_fetch_all($insert_result, MYSQLI_ASSOC);
 
                 <!-- Filters & Search Toolbar -->
                 <div class="card-custom p-3 mb-4">
-                    <div class="row g-3">
+                    <form method="GET">
+                        <div class="row g-3">
                         <div class="col-12 col-md-5">
                             <div class="input-group">
                                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                                <input type="text" class="form-control border-start-0 ps-0" placeholder="Search by name, email or roll...">
+                                <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Search by name, email or roll...">
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
-                            <select class="form-select">
+                            <select name="class" class="form-select">
                                 <option value="">All Classes</option>
                                 <option value="10-A">Grade 10-A</option>
                                 <option value="10-B">Grade 10-B</option>
@@ -110,7 +126,7 @@ $student_data = mysqli_fetch_all($insert_result, MYSQLI_ASSOC);
                             </select>
                         </div>
                         <div class="col-6 col-md-2">
-                            <select class="form-select">
+                            <select name="statuses" class="form-select">
                                 <option value="">All Statuses</option>
                                 <option value="active">Active</option>
                                 <option value="pending">Pending</option>
@@ -118,11 +134,12 @@ $student_data = mysqli_fetch_all($insert_result, MYSQLI_ASSOC);
                             </select>
                         </div>
                         <div class="col-12 col-md-2 d-grid">
-                            <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-1">
-                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            <button type="text" class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-arrow-clockwise"></i> Search
                             </button>
                         </div>
                     </div>
+                    </form>
                 </div>
 
                 <!-- Students Table Card -->
