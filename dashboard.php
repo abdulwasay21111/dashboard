@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/session_check.php";
 require_once __DIR__ . "/db_con.php";
+require_once __DIR__ . "/auth.php";
 
 ?>
 <!DOCTYPE html>

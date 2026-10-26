@@ -34,6 +34,9 @@ mysqli_stmt_bind_param($query, 's', $accMail);
 mysqli_stmt_execute($query);
 $query_result = mysqli_stmt_get_result($query);
 
+
+
+
 if(mysqli_num_rows($query_result) == 0){
         $register_errors[] = "THis Email is not registered";
         $_SESSION["registration_errors"] = $register_errors;
@@ -54,7 +57,7 @@ if(password_verify($accPass, $user["Pass"]) == false){
 
 }
 
-$_SERVER["id"] = $user["id"];
+$_SESSION["id"] = $user["id"];
 header("Location: dashboard.php");
 exit;
  

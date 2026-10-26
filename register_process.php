@@ -9,10 +9,10 @@ $register_errors = [];
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 // Details Variables
-$accName = $_POST["fullName"];
-$accMail = $_POST["Email"];
-$accPass = $_POST["password"];
-$accCP = $_POST["confirm_pass"];
+$accName = trim($_POST["fullName"]);
+$accMail = trim($_POST["Email"]);
+$accPass = trim($_POST["password"]);
+$accCP = trim($_POST["confirm_pass"]);
 
 
 
@@ -39,7 +39,14 @@ if(!empty($register_errors)){
 $query = mysqli_prepare($connection, "SELECT * from registered_users WHERE Mail = ?") ;
 mysqli_stmt_bind_param($query, 's', $accMail);
 mysqli_stmt_execute($query);
+
+
+
 $query_result = mysqli_stmt_get_result($query);
+// echo "<pre>";
+// print_r( $query_result);
+// echo "</pre>";
+// exit;
 
 if(mysqli_num_rows($query_result) > 0){
         $register_errors[] = "THis Email is already registered";

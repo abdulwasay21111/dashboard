@@ -1,19 +1,25 @@
 <?php
 require_once __DIR__ . "/session_check.php";
 require_once __DIR__ . "/db_con.php";
+require_once __DIR__ . "/auth.php";
 $search = isset($_GET["search"]) ? $_GET["search"] : "";
 $class = isset($_GET['class']) ? $_GET["class"] : "";
 
 
+$register_errors = $_SESSION['registration_errors'] ?? [];
+unset($_SESSION['registration_errors']);
+
+$success =$_SESSION['success'] ?? "";
+unset($_SESSION["success"]);
 
 
 $query_insert_student  = "SELECT * from students_info INNER JOIN students_academics ON students_info.student_id = students_academics.student_id";
-if($search != ""){
+if ($search != "") {
     $query_insert_student .= " WHERE (students_info.first_name ='$search' OR students_info.last_name = '$search' OR students_info.email='$search' OR students_academics.roll_number='$search' OR students_info.email='$search')";
 }
-if($class != ""){
+if ($class != "") {
 
-$query_insert_student .=  " AND class='$class'";
+    $query_insert_student .=  " AND class='$class'";
 }
 
 $insert_result = mysqli_query($connection, $query_insert_student);
@@ -25,7 +31,7 @@ $student_data = mysqli_fetch_all($insert_result, MYSQLI_ASSOC);
 // exit;
 
 // echo "<pre>";
-// print_r($query_insert_student);
+// print_r($student_data[0]["student_id"]);
 // echo "</pre>";
 // exit;
 ?>
@@ -111,37 +117,50 @@ $student_data = mysqli_fetch_all($insert_result, MYSQLI_ASSOC);
                 <div class="card-custom p-3 mb-4">
                     <form method="GET">
                         <div class="row g-3">
-                        <div class="col-12 col-md-5">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                                <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Search by name, email or roll...">
+                            <div class="col-12 col-md-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Search by name, email or roll...">
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <select name="class" class="form-select">
+                                    <option value="">All Classes</option>
+                                    <option value="10-A">Grade 10-A</option>
+                                    <option value="10-B">Grade 10-B</option>
+                                    <option value="11-A">Grade 11-A</option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <select name="statuses" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="active">Active</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-2 d-grid">
+                                <button type="text" class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-1">
+                                    <i class="bi bi-arrow-clockwise"></i> Search
+                                </button>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <select name="class" class="form-select">
-                                <option value="">All Classes</option>
-                                <option value="10-A">Grade 10-A</option>
-                                <option value="10-B">Grade 10-B</option>
-                                <option value="11-A">Grade 11-A</option>
-                            </select>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <select name="statuses" class="form-select">
-                                <option value="">All Statuses</option>
-                                <option value="active">Active</option>
-                                <option value="pending">Pending</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <div class="col-12 col-md-2 d-grid">
-                            <button type="text" class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-1">
-                                <i class="bi bi-arrow-clockwise"></i> Search
-                            </button>
-                        </div>
-                    </div>
                     </form>
                 </div>
-
+                <?php if (!empty($register_errors)) { ?>
+                    <div class="alert alert-danger">
+                        <ul>
+                            <?php foreach ($register_errors as $error) { ?>
+                                <li><?= $error ?></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                <?php } ?>
+                <?php if ($success) { ?>
+                    <div class="alert alert-success">
+                        <?php echo $success; ?>
+                    </div>
+                <?php } ?>
                 <!-- Students Table Card -->
                 <div class="card-custom overflow-hidden">
                     <div class="table-responsive">
@@ -172,7 +191,7 @@ $student_data = mysqli_fetch_all($insert_result, MYSQLI_ASSOC);
                                                 <div class="d-flex align-items-center gap-2">
                                                     <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=faces" class="avatar-sm rounded-circle" alt="Alex">
                                                     <div>
-                                                        <a href="student-detail.html" class="fw-semibold text-dark text-decoration-none"><?php echo $studentData['first_name'] . " " . $studentData['last_name'] ; ?></a>
+                                                        <a href="student-detail.html" class="fw-semibold text-dark text-decoration-none"><?php echo $studentData['first_name'] . " " . $studentData['last_name']; ?></a>
                                                         <div class="small text-muted"><?php echo $studentData['email']; ?></div>
                                                     </div>
                                                 </div>
@@ -186,7 +205,7 @@ $student_data = mysqli_fetch_all($insert_result, MYSQLI_ASSOC);
                                                 <div class="d-inline-flex gap-1">
                                                     <a href="student-detail.html" class="btn btn-sm btn-light border p-1 px-2" title="View Profile"><i class="bi bi-eye"></i></a>
                                                     <a href="student-edit.html" class="btn btn-sm btn-light border p-1 px-2" title="Edit Student"><i class="bi bi-pencil"></i></a>
-                                                    <button class="btn btn-sm btn-light border p-1 px-2 text-danger" data-bs-toggle="modal" data-bs-target="#deleteStudentModal" title="Delete"><i class="bi bi-trash"></i></button>
+                                                    <a href="delete_process.php?id=<?= $studentData['student_id'] ?> " class="btn btn-sm btn-light border p-1 px-2 text-danger" title="Delete"><i class="bi bi-trash"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
