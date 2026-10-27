@@ -1,6 +1,30 @@
+<?php
+require_once __DIR__ . "/session_check.php";
+require_once __DIR__ . "/db_con.php";
+require_once __DIR__ . "/auth.php";
 
+$register_errors = [];
+$st_id = $_GET["id"] ?? "";
+
+if (empty($st_id)) {
+    $register_errors[] = "Student id is required";
+}
+if (!empty($register_errors)) {
+    $_SESSION["registration_errors"] = $register_errors;
+    header("Location: students.php");
+    exit;
+}
+$q = "SELECT * FROM students_info 
+	            INNER JOIN students_academics 
+                ON students_info.student_id = students_academics.student_id
+                WHERE students_info.student_id = $st_id";
+$result = mysqli_query($connection, $q);
+
+$student   = mysqli_fetch_assoc($result);
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,11 +40,12 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body>
 
     <div class="app-container">
         <!-- Sidebar Navigation -->
-       <?php require_once __DIR__ . "/parts/sidebar.php"; ?>
+        <?php require_once __DIR__ . "/parts/sidebar.php"; ?>
 
         <!-- Main Content Area -->
         <div class="main-wrapper">
@@ -59,13 +84,13 @@
                                 <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&h=150&fit=crop&crop=faces" class="avatar-lg rounded-circle border border-3 border-white shadow-sm" alt="Alex Rivera">
                                 <div>
                                     <div class="d-flex align-items-center gap-2">
-                                        <h3 class="fw-bold mb-0">Alex Rivera</h3>
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle">Active</span>
+                                        <h3 class="fw-bold mb-0"><?php echo $student['first_name'] . " " . $student['last_name'] ?></h3>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle"><?php echo $student['status']  ?></span>
                                     </div>
                                     <div class="text-muted small mt-1">
-                                        <span><i class="bi bi-hash"></i>Roll: <strong>1024</strong></span>
+                                        <span><i class="bi bi-hash"></i>Roll: <strong><?php echo $student['roll_number']  ?></strong></span>
                                         <span class="mx-2">•</span>
-                                        <span><i class="bi bi-building me-1"></i>Class: <strong>Grade 10-A</strong></span>
+                                        <span><i class="bi bi-building me-1"></i>Class: <strong><?php echo $student['class'] ?></strong></span>
                                         <span class="mx-2">•</span>
                                         <span><i class="bi bi-calendar-event me-1"></i>Joined: <strong>Aug 2024</strong></span>
                                     </div>
@@ -114,23 +139,23 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item px-0 py-2 d-flex justify-content-between">
                                         <span class="text-muted">Full Name</span>
-                                        <span class="fw-semibold">Alex Rivera</span>
+                                        <span class="fw-semibold"><?php echo $student['first_name'] . " " . $student['last_name'] ?></span>
                                     </li>
                                     <li class="list-group-item px-0 py-2 d-flex justify-content-between">
                                         <span class="text-muted">Gender</span>
-                                        <span class="fw-semibold">Male</span>
+                                        <span class="fw-semibold"><?php echo $student['gender']?></span>
                                     </li>
                                     <li class="list-group-item px-0 py-2 d-flex justify-content-between">
                                         <span class="text-muted">Date of Birth</span>
-                                        <span class="fw-semibold">April 12, 2008 (16 yrs)</span>
+                                        <span class="fw-semibold"><?php echo $student['dob']  ?></span>
                                     </li>
                                     <li class="list-group-item px-0 py-2 d-flex justify-content-between">
                                         <span class="text-muted">Email</span>
-                                        <span class="fw-semibold text-primary">alex.r@school.edu</span>
+                                        <span class="fw-semibold text-primary"><?php echo $student['email']  ?></span>
                                     </li>
                                     <li class="list-group-item px-0 py-2 d-flex justify-content-between">
                                         <span class="text-muted">Phone</span>
-                                        <span class="fw-semibold">+1 (555) 234-5678</span>
+                                        <span class="fw-semibold"><?php echo $student['phone']  ?></span>
                                     </li>
                                     <li class="list-group-item px-0 py-2 d-flex justify-content-between">
                                         <span class="text-muted">Blood Group</span>
@@ -252,4 +277,5 @@
     <!-- Custom JS -->
     <script src="assets/js/main.js"></script>
 </body>
+
 </html>

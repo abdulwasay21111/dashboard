@@ -1,4 +1,30 @@
+<?php
+require_once __DIR__ . "/session_check.php";
+require_once __DIR__ . "/db_con.php";
+require_once __DIR__ . "/auth.php";
 
+$register_errors = [];
+$st_id = $_GET["id"] ?? "";
+
+if(empty($st_id)){
+    $register_errors[] = "Student id is required";
+}
+if(!empty($register_errors)){
+    $_SESSION["registration_errors"] = $register_errors;
+    header("Location: students.php");
+    exit;
+}
+
+$q = "SELECT * FROM students_info 
+	            INNER JOIN students_academics 
+                ON students_info.student_id = students_academics.student_id
+                WHERE students_info.student_id = $st_id";
+
+$result = mysqli_query($connection, $q);
+
+$student   = mysqli_fetch_assoc($result);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,7 +139,7 @@
                     <div class="col-12 col-xl-9">
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <div>
-                                <h4 class="fw-bold mb-1">Edit Student: Alex Rivera</h4>
+                                <h4 class="fw-bold mb-1">Edit Student: <?php echo $student['first_name'] . " " . $student['last_name'] ?></h4>
                                 <p class="text-muted small mb-0">Update student enrollment records and contact details</p>
                             </div>
                             <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
@@ -121,7 +147,8 @@
                             </span>
                         </div>
 
-                        <form action="students.html" method="GET">
+                        <form action="handle_edit.php" method="POST">
+                            <input type="hidden" name="student_id"  value="<?php echo $st_id ?>">
                             <!-- Avatar & Profile Photo Section -->
                             <div class="card-custom mb-4 p-3">
                                 <div class="d-flex align-items-center gap-3">
@@ -146,19 +173,19 @@
                                     <div class="row g-3">
                                         <div class="col-12 col-md-6">
                                             <label for="firstName" class="form-label small fw-semibold text-secondary">First Name</label>
-                                            <input type="text" class="form-control" id="firstName" value="Alex" required>
+                                            <input type="text" name="first_name" class="form-control" id="firstName" value="<?php echo $student["first_name"];  ?>" required>
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="lastName" class="form-label small fw-semibold text-secondary">Last Name</label>
-                                            <input type="text" class="form-control" id="lastName" value="Rivera" required>
+                                            <input type="text" name="last_name" class="form-control" id="lastName" value="<?php echo $student["last_name"];  ?>" required>
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="studentEmail" class="form-label small fw-semibold text-secondary">Email Address</label>
-                                            <input type="email" class="form-control" id="studentEmail" value="alex.r@school.edu" required>
+                                            <input type="email" name="student_email" class="form-control" id="studentEmail" value="<?php echo $student["email"];  ?>" required>
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="phone" class="form-label small fw-semibold text-secondary">Phone Number</label>
-                                            <input type="tel" class="form-control" id="phone" value="+1 (555) 234-5678">
+                                            <input type="tel" name="student_phone" class="form-control" id="phone" value="<?php echo $student["phone"];  ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -173,35 +200,35 @@
                                     <div class="row g-3">
                                         <div class="col-12 col-md-4">
                                             <label for="rollNumber" class="form-label small fw-semibold text-secondary">Roll Number</label>
-                                            <input type="text" class="form-control" id="rollNumber" value="1024" required>
+                                            <input type="text" name="student_rn" class="form-control" id="rollNumber" value="<?php echo $student["roll_number"];  ?>" required>
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label for="studentClass" class="form-label small fw-semibold text-secondary">Class / Grade</label>
-                                            <select class="form-select" id="studentClass" required>
-                                                <option value="10-A" selected>Grade 10-A</option>
-                                                <option value="10-B">Grade 10-B</option>
-                                                <option value="11-A">Grade 11-A</option>
-                                                <option value="11-B">Grade 11-B</option>
+                                            <select class="form-select" name="student_grade" id="studentClass" required>
+                                                <option value="10-A" <?php echo ($student["class"] == "10-A") ? "selected" : '' ?> >Grade 10-A</option>
+                                                <option value="10-B" <?php echo ($student["class"] == "10-B") ? "selected" : '' ?>>Grade 10-B</option>
+                                                <option value="11-A" <?php echo ($student["class"] == "11-A") ? "selected" : '' ?>>Grade 11-A</option>
+                                                <option value="11-B" <?php echo ($student["class"] == "11-B") ? "selected" : '' ?>>Grade 11-B</option>
                                             </select>
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label for="gender" class="form-label small fw-semibold text-secondary">Gender</label>
-                                            <select class="form-select" id="gender">
-                                                <option value="male" selected>Male</option>
-                                                <option value="female">Female</option>
-                                                <option value="other">Other</option>
+                                            <select class="form-select" name="student_gender" id="gender">
+                                                <option value="male" <?php echo ($student["gender"] == "male") ? "selected" : '' ?>>Male</option>
+                                                <option value="female" <?php echo ($student["gender"] == "10-female") ? "selected" : '' ?>>Female</option>
+                                                
                                             </select>
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="dob" class="form-label small fw-semibold text-secondary">Date of Birth</label>
-                                            <input type="date" class="form-control" id="dob" value="2008-04-12">
+                                            <input type="date" name="student_dob" class="form-control" id="dob" value="<?php echo $student["dob"];  ?>">
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <label for="status" class="form-label small fw-semibold text-secondary">Enrollment Status</label>
-                                            <select class="form-select" id="status">
-                                                <option value="active" selected>Active</option>
-                                                <option value="pending">Pending</option>
-                                                <option value="inactive">Inactive</option>
+                                            <select class="form-select" name="student_status" id="status">
+                                                <option value="active" <?php echo ($student["status"] == "active") ? "selected" : '' ?>>Active</option>
+                                                <option value="pending" <?php echo ($student["status"] == "pending") ? "selected" : '' ?>>Pending</option>
+                                                <option value="inactive" <?php echo ($student["status"] == "inactive") ? "selected" : '' ?>>Inactive</option>
                                             </select>
                                         </div>
                                     </div>

@@ -203,8 +203,8 @@ $student_data = mysqli_fetch_all($insert_result, MYSQLI_ASSOC);
                                             <td><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><?php echo $studentData['status']; ?></span></td>
                                             <td class="text-end">
                                                 <div class="d-inline-flex gap-1">
-                                                    <a href="student-detail.html" class="btn btn-sm btn-light border p-1 px-2" title="View Profile"><i class="bi bi-eye"></i></a>
-                                                    <a href="student-edit.html" class="btn btn-sm btn-light border p-1 px-2" title="Edit Student"><i class="bi bi-pencil"></i></a>
+                                                    <a href="student-detail.php?id=<?= $studentData['student_id'] ?>" class="btn btn-sm btn-light border p-1 px-2" title="View Profile"><i class="bi bi-eye"></i></a>
+                                                    <a href="student-edit.php?id=<?= $studentData['student_id'] ?> " class="btn btn-sm btn-light border p-1 px-2" title="Edit Student"><i class="bi bi-pencil"></i></a>
                                                     <a href="delete_process.php?id=<?= $studentData['student_id'] ?> " class="btn btn-sm btn-light border p-1 px-2 text-danger" title="Delete"><i class="bi bi-trash"></i></a>
                                                 </div>
                                             </td>
